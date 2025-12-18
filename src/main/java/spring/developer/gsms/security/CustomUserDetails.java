@@ -3,7 +3,7 @@ package spring.developer.gsms.security;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import spring.developer.gsms.model.UserModel;
+import spring.developer.gsms.entity.UserModel;
 
 import java.util.Collection;
 

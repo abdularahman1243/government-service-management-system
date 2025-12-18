@@ -1,4 +1,4 @@
-package spring.developer.gsms.model;
+package spring.developer.gsms.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

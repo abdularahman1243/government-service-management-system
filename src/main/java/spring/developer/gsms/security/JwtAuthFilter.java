@@ -13,7 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -21,6 +20,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/",
+            "/api/auth",
+            "/api/public",
+            "/uploads",
+            "/swagger-ui",
+            "/v3/api-docs"
+    };
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -31,17 +38,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // ===================== PUBLIC ENDPOINTS =====================
-        if (
-                path.startsWith("/api/public") ||
-                        path.startsWith("/api/auth") ||
-                        path.startsWith("/api/instructors") ||
-                        path.startsWith("/api/courses/public") ||
-                        path.startsWith("/uploads") ||
-                        path.startsWith("/swagger") ||
-                        path.startsWith("/v3/api-docs")
-        ) {
-            filterChain.doFilter(request, response);
-            return;
+        for (String publicPath : PUBLIC_ENDPOINTS) {
+            if (path.startsWith(publicPath)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
         // ===================== AUTH HEADER =====================
@@ -83,7 +84,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            // ⛔ توکن منقضی شده → فقط عبور بده
+            //  توکن منقضی شده
             SecurityContextHolder.clearContext();
         }
 

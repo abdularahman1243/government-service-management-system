@@ -5,7 +5,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import spring.developer.gsms.model.UserModel;
+import spring.developer.gsms.entity.UserModel;
 
 import java.security.Key;
 import java.util.Date;
