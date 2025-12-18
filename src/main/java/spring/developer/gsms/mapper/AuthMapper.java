@@ -11,5 +11,10 @@ public interface AuthMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "enabled", constant = "true")
+    @Mapping(target = "phone", ignore = true)
+    @Mapping(target = "address", ignore = true)
+    @Mapping(target = "dateOfBirth", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     UserModel toEntity(RegisterRequestDTO dto);
 }
+
