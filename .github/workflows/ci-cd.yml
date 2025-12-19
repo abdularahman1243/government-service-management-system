@@ -1,4 +1,4 @@
-name: GSMS CI Pipeline
+name: GSMS CI/CD Pipeline
 
 on:
   push:
@@ -7,11 +7,15 @@ on:
     branches: [ "main" ]
 
 jobs:
+
+  # =========================
+  # CI : Build & Test
+  # =========================
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -20,8 +24,23 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build with Maven
+      - name: Build project
         run: mvn clean compile
 
-      - name: Run Tests
+      - name: Run unit tests
         run: mvn test
+
+
+  # =========================
+  # CD : Docker Build
+  # =========================
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t gsms-backend:latest .
