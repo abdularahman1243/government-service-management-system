@@ -16,6 +16,7 @@ import spring.developer.gsms.repository.ServiceMongoRepository;
 import spring.developer.gsms.repository.ServiceRequestMongoRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,6 +83,66 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                 pageResult.getTotalElements(),
                 pageResult.getTotalPages(),
                 pageResult.isLast()
+        );
+    }
+    @Override
+    public List<ServiceRequestResponseDTO> getPendingRequests() {
+
+        return requestRepository.findByStatus("SUBMITTED")
+                .stream()
+                .map(mapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public void approve(String requestNo, Long officerId) {
+
+        ServiceRequestDocument request = requestRepository.findByRequestNo(requestNo)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
+
+        String fromStatus = request.getStatus();
+        request.setStatus("APPROVED");
+        request.setUpdatedAt(LocalDateTime.now());
+
+        addHistory(request, fromStatus, "APPROVED", officerId, "Approved");
+
+        requestRepository.save(request);
+    }
+
+    @Override
+    public void reject(String requestNo, Long officerId, String comment) {
+
+        ServiceRequestDocument request = requestRepository.findByRequestNo(requestNo)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
+
+        String fromStatus = request.getStatus();
+        request.setStatus("REJECTED");
+        request.setUpdatedAt(LocalDateTime.now());
+
+        addHistory(request, fromStatus, "REJECTED", officerId, comment);
+
+        requestRepository.save(request);
+    }
+
+    private void addHistory(
+            ServiceRequestDocument request,
+            String from,
+            String to,
+            Long by,
+            String comment
+    ) {
+        if (request.getHistory() == null) {
+            request.setHistory(new ArrayList<>());
+        }
+
+        request.getHistory().add(
+                new ServiceRequestDocument.StatusHistory(
+                        from,
+                        to,
+                        by,
+                        LocalDateTime.now(),
+                        comment
+                )
         );
     }
 

@@ -18,4 +18,11 @@ public interface ServiceRequestService {
             int page,
             int size
     );
+
+    // OFFICER actions
+    List<ServiceRequestResponseDTO> getPendingRequests();
+
+    void approve(String requestNo, Long officerId);
+
+    void reject(String requestNo, Long officerId, String comment);
 }

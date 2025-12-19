@@ -33,58 +33,28 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(sess ->
-                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(s ->
+                        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .authorizeHttpRequests(auth -> auth
 
-                        // ===================== PUBLIC =====================
+                        // PUBLIC
                         .requestMatchers(
                                 "/",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/uploads/**",
-                                "/api/auth/**",
-                                "/api/public/**",
-                                "/api/instructors/**"
+                                "/api/auth/**"
                         ).permitAll()
 
-                        // ===================== DASHBOARDS =====================
-                        .requestMatchers("/api/dashboard/full-admin").hasRole("FULL_ADMIN")
-                        .requestMatchers("/api/dashboard/admin").hasAnyRole("ADMIN", "FULL_ADMIN")
-                        .requestMatchers("/api/dashboard/teacher").hasRole("TEACHER")
-                        .requestMatchers("/api/dashboard/student").hasRole("STUDENT")
+                        // ROLE-BASED
+                        .requestMatchers("/api/citizen/**").hasRole("CITIZEN")
+                        .requestMatchers("/api/officer/**").hasRole("OFFICER")
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
 
-                        // ===================== FULL ADMIN =====================
-                        .requestMatchers("/api/admin/full/**").hasRole("FULL_ADMIN")
-
-                        // ===================== ADMIN =====================
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "FULL_ADMIN")
-
-                        // ===================== USERS =====================
-                        .requestMatchers("/api/users/**")
-                        .hasAnyRole("FULL_ADMIN", "ADMIN")
-
-                        // ===================== TEACHER =====================
-                        .requestMatchers("/api/teacher/**").hasRole("TEACHER")
-
-                        // ===================== STUDENT =====================
-                        .requestMatchers("/api/student/**").hasRole("STUDENT")
-                        .requestMatchers("/api/student/learn/**").authenticated()
-
-                        .requestMatchers("/api/enrollments/**").authenticated()
-                        .requestMatchers("/api/public/courses/*/lessons").authenticated()
-
-                        // ===================== SHARED =====================
-                        .requestMatchers("/api/courses/**", "/api/lessons/**")
-                        .hasAnyRole("FULL_ADMIN", "ADMIN", "TEACHER", "STUDENT")
-
-                        // ===================== DEFAULT =====================
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
