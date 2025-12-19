@@ -90,7 +90,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ AuthenticationManager را از Spring Boot می‌گیریم
+    //  AuthenticationManager را از Spring Boot می‌گیریم
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {
@@ -110,7 +110,7 @@ public class SecurityConfig {
         return source;
     }
 
-    // ✅ PasswordEncoder برای ثبت‌نام و لاگین
+    // PasswordEncoder برای ثبت‌نام و لاگین
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
